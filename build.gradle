@@ -1,31 +1,87 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.avast.gradle:gradle-docker-compose-plugin:0.17.6"
+        classpath "org.postgresql:postgresql:42.2.27"
+        classpath "org.flywaydb:flyway-database-postgresql:10.4.1"
+    }
+}
+
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.2'
-	id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'com.avast.gradle.docker-compose' version '0.17.6'
+    id "org.flywaydb.flyway" version "10.4.1"
 }
 
 group = 'ru.cft'
 version = '0.0.1'
 
 java {
-	sourceCompatibility = '21'
+    sourceCompatibility = '17'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:postgresql'
+    //Web & Security
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    //Database
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.flywaydb:flyway-core'
+    runtimeOnly "org.postgresql:postgresql"
+
+    //mapstruct & lombok
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    //Swagger & openapi
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    //Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
+}
+
+compileJava {
+    options.compilerArgs += ['-Amapstruct.unmappedTargetPolicy=ERROR', '-Amapstruct.defaultComponentModel=spring']
+}
+
+dockerCompose() {
+    projectName = 'wallet'
+    useComposeFiles = ['docker-compose.yml']
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'ru.cft.template.WalletApplication'
+    }
+}
+flyway {
+    url = 'jdbc:postgresql://localhost:5430/wallet'
+    user = 'wallet'
+    password = 'wallet'
+    schemas = ['wallet']
+    locations = ['filesystem:src/main/resources/db.migration']
 }

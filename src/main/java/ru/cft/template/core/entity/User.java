@@ -1,10 +1,14 @@
 package ru.cft.template.core.entity;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +21,8 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -26,7 +30,7 @@ import java.util.Set;
 @Data
 @Builder
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "wallet")
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
@@ -34,25 +38,33 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String firstName;
     private String lastName;
+    private String patronymic;
     private String email;
     private String password;
-    private long phone;
+    private String phone;
     private boolean enabled;
-
     private LocalDate birthday;
-
     @CreationTimestamp
-    private LocalDateTime creationDate;
-
+    private Instant creationDate;
     @UpdateTimestamp
-    private LocalDateTime updateDate;
-
+    private Instant updateDate;
     @OneToMany
     @ToString.Exclude
     private Set<Session> sessions;
+    @OneToMany
+    @Column
+    @ToString.Exclude
+    private Set<PaymentInvoice> paymentInvoices;
+    @OneToMany
+    @Column
+    @ToString.Exclude
+    private Set<MoneyTransfer> moneyTransfers;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "wallet_id")
+    @ToString.Exclude
+    private Wallet wallet;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

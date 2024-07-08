@@ -1,10 +1,12 @@
 package ru.cft.template.core.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +21,7 @@ import java.util.Objects;
 
 @Data
 @Entity
+@Table(name = "session", schema = "wallet")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,10 +29,11 @@ public class Session {
     @Id
     @UuidGenerator
     private String value;
+    @Column(name = "expiration_time")
     private LocalDateTime expirationTime;
     private boolean active;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User user;

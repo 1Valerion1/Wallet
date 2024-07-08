@@ -24,10 +24,20 @@ public interface UserMapper {
     @Mapping(target = "registrationDate", source = "creationDate")
     UserDto map(User user);
 
-    void map(@MappingTarget User user, UserPatchRequest userPatchRequest);
-
     @Named("mapAge")
     default int mapAge(LocalDate birthday) {
         return Period.between(birthday, LocalDate.now()).getYears();
     }
+
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
+    @Mapping(target = "patronymic", source = "patronymic")
+    void map(@MappingTarget User user, UserPatchRequest userPatchRequest);
+
+
+    @Named("mapUserToLong")
+    static Long mapUserToLong(User user) {
+        return user.getId();
+    }
+
 }

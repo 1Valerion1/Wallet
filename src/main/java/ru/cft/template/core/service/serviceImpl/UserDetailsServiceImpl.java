@@ -1,4 +1,4 @@
-package ru.cft.template.core.service;
+package ru.cft.template.core.service.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

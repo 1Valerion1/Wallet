@@ -15,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import ru.cft.template.core.Context;
 import ru.cft.template.core.entity.Session;
 import ru.cft.template.core.entity.User;
-import ru.cft.template.core.service.SessionService;
+import ru.cft.template.core.service.serviceImpl.SessionService;
 
 import java.io.IOException;
 
@@ -33,21 +33,21 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String sessionToken = getTokenFromRequest(request);
-        if (sessionToken == null)
-            filterChain.doFilter(request, response);
-        Session session = sessionService.getValidSession(sessionToken);
-        if (session != null) {
-            User user = session.getUser();
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    UsernamePasswordAuthenticationToken.authenticated(
-                            user,
-                            null,
-                            user.getAuthorities()
-                    );
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            Context.get().setSession(session);
-            Context.get().setUser(user);
+        if (sessionToken != null) {
+            Session session = sessionService.getValidSession(sessionToken);
+            if (session != null && session.getUser() != null) {
+                User user = session.getUser();
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        UsernamePasswordAuthenticationToken.authenticated(
+                                user,
+                                null,
+                                user.getAuthorities()
+                        );
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                Context.get().setSession(session);
+                Context.get().setUser(user);
+            }
         }
 
         filterChain.doFilter(request, response);

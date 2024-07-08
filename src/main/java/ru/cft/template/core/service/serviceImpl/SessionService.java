@@ -1,4 +1,4 @@
-package ru.cft.template.core.service;
+package ru.cft.template.core.service.serviceImpl;
 
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +38,7 @@ public class SessionService {
         User user = Context.get().getUser();
         List<Session> sessions = sessionRepository
                 .findAllByUserAndActiveTrueAndExpirationTimeAfter(user, LocalDateTime.now());
+
         return sessionMapper.map(sessions);
     }
 
@@ -48,6 +49,12 @@ public class SessionService {
     public SessionDto create(SessionRequest sessionRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken.unauthenticated(sessionRequest.email(), sessionRequest.password()));
+
+        User user = (User) authentication.getPrincipal();
+        List<Session> activeSessions = sessionRepository.findAllByUserAndActiveTrue(user);
+        if (activeSessions.size() >= 3) {
+            throw new RuntimeException("Достигнут предел количества активных сессий для данного пользователя");
+        }
 
         Session session = buildNewSession((User) authentication.getPrincipal());
         sessionRepository.save(session);
@@ -61,6 +68,10 @@ public class SessionService {
 
     public void invalidateExpiredSessions() {
         sessionRepository.updateAllByExpirationTimeAfter(LocalDateTime.now());
+    }
+
+    public void cleanupExpiredSessions() {
+        sessionRepository.deleteAllByExpirationTimeAfter();
     }
 
     private void invalidate(Session session) {

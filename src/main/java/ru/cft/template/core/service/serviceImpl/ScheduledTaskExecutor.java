@@ -1,4 +1,4 @@
-package ru.cft.template.core.service;
+package ru.cft.template.core.service.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,5 +20,11 @@ public class ScheduledTaskExecutor {
     @Scheduled(fixedDelayString = "PT60S")
     public void invalidateExpiredSessions() {
         service.invalidateExpiredSessions();
+    }
+
+    @Transactional
+    @Scheduled(fixedDelayString = "PT12H")
+    public void cleanupExpiredSessions() {
+        service.cleanupExpiredSessions();
     }
 }

@@ -1,5 +1,6 @@
 package ru.cft.template.api.controller;
 
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,46 +14,42 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.cft.template.api.Paths;
 import ru.cft.template.api.dto.SessionDto;
 import ru.cft.template.api.dto.SessionRequest;
-import ru.cft.template.core.service.SessionService;
+import ru.cft.template.core.service.serviceImpl.SessionService;
 
 import java.util.List;
 
-@Tag(name = "Сессии")
 @Validated
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Session", description = "Операции над сессиями: авторизация, выход из сессии, получении информации о сессии")
 public class SessionController {
 
     private final SessionService sessionService;
 
-    @Operation(description = """
-            Получение всех активных сессий пользователя.
-            """)
+
     @GetMapping(Paths.USERS_SESSIONS)
+    @Operation(description = "Получить все активные сессии")
     public List<SessionDto> getAll() {
         return sessionService.getAllActive();
     }
 
-    @Operation(description = """
-            Получение информации о текущей сессии пользователя.
-            """)
+
     @GetMapping(Paths.USERS_SESSIONS_CURRENT)
+    @Operation(description = "Получить текущию сессию")
     public SessionDto getCurrent() {
         return sessionService.getCurrent();
     }
 
-    @Operation(description = """
-            Создание новой сессии для пользователя.
-            """)
+
     @PostMapping(Paths.USERS_SESSIONS)
+    @Operation(description = "Создает новую сессию для пользователя.")
     public SessionDto login(@Valid @RequestBody SessionRequest sessionRequest) {
         return sessionService.create(sessionRequest);
     }
 
-    @Operation(description = """
-            Удаление текущей сессии пользователя.
-            """)
+
     @DeleteMapping(Paths.USERS_SESSIONS_ID)
+    @Operation(description = "Завершает текущую сессию пользователя.")
     public void remove() {
         sessionService.removeCurrent();
     }

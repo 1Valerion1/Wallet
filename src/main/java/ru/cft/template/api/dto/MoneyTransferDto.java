@@ -1,0 +1,24 @@
+package ru.cft.template.api.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.Builder;
+import ru.cft.template.core.entity.Enum.TransferType;
+
+import java.time.Instant;
+import java.util.UUID;
+@Builder
+@Schema(description = "Information about MoneyTransferDto")
+public record MoneyTransferDto(
+        UUID transferId,
+        Integer amount,
+        @Enumerated(EnumType.STRING)
+        TransferType transferType,
+        @Enumerated(EnumType.STRING)
+        String status,
+        String receiverPhone,
+        Long receiverWallet,
+        String comment,
+        Instant creating_translation ) {
+}

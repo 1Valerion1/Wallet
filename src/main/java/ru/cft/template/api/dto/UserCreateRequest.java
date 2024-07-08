@@ -12,34 +12,33 @@ import java.time.LocalDate;
 
 @Builder
 public record UserCreateRequest(
-
-        @Schema(description = "Номер телефона", example = "79807673242")
+        @NotNull
+        @Pattern(regexp = "^[А-Я][а-я]{0,49}$")
+        @Schema(description = "Фамилия пользователя", example = "Иванов")
+        String lastName,
+        @NotNull
+        @Pattern(regexp = "^[А-Я][а-я]{0,49}$")
+        @Schema(example = "Иванов")
+        String firstName,
+        @NotNull
+        @Pattern(regexp = "^[А-Я][а-я]{0,49}$")
+        @Schema(example = "Иванов")
+        String patronymic,
         @NotNull
         @ValidPhone
-        Long phone,
-
-        @Schema(description = "Пароль", example = "ItIsVal1dPassword?!")
-        @NotNull
-        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!?])[A-Za-z\\d!?]{8,64}$")
-        String password,
-
-        @Schema(description = "Имя", example = "Иван")
-        @NotNull
-        @Pattern(regexp = "^[А-Я][а-я]{0,49}$")
-        String firstName,
-
-        @Schema(description = "Фамилия", example = "Иванов")
-        @NotNull
-        @Pattern(regexp = "^[А-Я][а-я]{0,49}$")
-        String lastName,
-
-        @Schema(description = "Адрес электронной почты", example = "shift@cft.ru")
+        @Schema(example = "79435352422")
+        String phone,
         @Email
         @NotNull
+        @Schema(example = "sdfsd@gmail.com")
         String email,
 
         @NotNull
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-        LocalDate birthday
+        LocalDate birthday,
+        @NotNull
+        @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!?])[A-Za-z\\d!?]{8,64}$")
+        @Schema(example = "Koroli1!")
+        String password
 ) {
 }

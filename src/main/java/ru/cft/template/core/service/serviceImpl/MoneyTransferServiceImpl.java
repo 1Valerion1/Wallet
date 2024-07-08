@@ -19,13 +19,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import static ru.cft.template.core.Messages.MONEY_TRANSFER_NOT_FOUND;
 import static ru.cft.template.core.exception.ErrorCode.OBJECT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
 public class MoneyTransferServiceImpl implements MoneyTransferService {
 
+    private static final String MONEY_TRANSFER_NOT_FOUND = null;
     private final MoneyTransferRepository moneyTransferRepository;
 
     private final MoneyTransferMapper moneyTransferMapper;

@@ -17,7 +17,15 @@ public interface SessionRepository extends JpaRepository<Session, String> {
     List<Session> findAllByUserAndActiveTrueAndExpirationTimeAfter(User user, LocalDateTime expirationTime);
 
     @Modifying
-    @Query(value = "update session set active = false where expiration_time < :localDateTime",
+    @Query(value = "update wallet.session set active = false where expiration_time < :localDateTime",
             nativeQuery = true)
     void updateAllByExpirationTimeAfter(LocalDateTime localDateTime);
+
+    List<Session> findAllByUserAndActiveTrue(User user);
+
+    @Modifying
+    @Query(value = "DELETE FROM wallet.session WHERE active = false",
+            nativeQuery = true)
+    void deleteAllByExpirationTimeAfter();
+
 }

@@ -1,5 +1,5 @@
 -- Создание схемы wallet
---CREATE SCHEMA IF NOT EXISTS wallet;
+CREATE SCHEMA IF NOT EXISTS wallet;
 
 create table users (
     id bigserial not null,

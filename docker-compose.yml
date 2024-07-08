@@ -5,20 +5,34 @@ services:
     container_name: postgres
     image: postgres:12
     hostname: database
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_DB=wallet
       - POSTGRES_USER=wallet
       - POSTGRES_PASSWORD=wallet
     ports:
       - "5430:5432"
-  # Сервис для разворачивания контейнера с приложением
+  pgadmin4:
+    container_name: pgadmin4
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    volumes:
+      - ./pgadmin4:/docker-entrypoint-initdb.d
+
+    # Сервис для разворачивания контейнера с приложением
   webapi:
     build:
       dockerfile: Dockerfile
       context: .
     hostname: webapi
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       - postgres
     environment:
@@ -26,7 +40,7 @@ services:
       - POSTGRES_USER=wallet
       - POSTGRES_PASSWORD=wallet
     healthcheck:
-      test: curl http://localhost:8080 || exit 0
+      test: curl http://localhost:8081 || exit 0
       interval: 10s
       retries: 5
       start_period: 15s

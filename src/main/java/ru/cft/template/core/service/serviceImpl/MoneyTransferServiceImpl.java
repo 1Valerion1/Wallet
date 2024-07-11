@@ -8,7 +8,6 @@ import ru.cft.template.api.dto.MoneyTransferDto;
 import ru.cft.template.api.dto.MoneyTransferFilteredTransfers;
 import ru.cft.template.core.Context;
 import ru.cft.template.core.entity.Enum.Status;
-import ru.cft.template.core.entity.Enum.TransferType;
 import ru.cft.template.core.entity.MoneyTransfer;
 import ru.cft.template.core.entity.User;
 import ru.cft.template.core.entity.Wallet;
@@ -70,6 +69,7 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
         senderWallet.setBalance(senderWallet.getBalance() - moneyTransferCreateRequest.amount());
         walletRepository.update(senderWallet.getBalance(), sender.getId());
 
+
         // Сохранение данных о переводе
         moneyTransferRepository.save(moneyTransfer);
 
@@ -96,11 +96,10 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
         return MoneyTransfer
                 .builder()
                 .amount(dto.amount())
-                .transferType(TransferType.INCOMING)
                 .user(Context.get().getSessions().getUser())
                 .wallet(userWallet(Long.parseLong(dto.receiverWallet())))
                 .comment(dto.comment())
-                .status(Status.UNPAID)
+                .status(Status.PAID)
                 .transferId(UUID.randomUUID())
                 .creatingTranslation(LocalDateTime.now())
                 .build();

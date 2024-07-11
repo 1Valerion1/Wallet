@@ -14,7 +14,6 @@ public interface MoneyTransferMapper {
         return MoneyTransferDto.builder()
                 .transferId(moneyTransfer.getTransferId())
                 .amount(moneyTransfer.getAmount())
-                .transferType(moneyTransfer.getTransferType())
                 .status(moneyTransfer.getStatus().toString())
                 .receiverPhone(phone)
                 .receiverWallet(walletId)

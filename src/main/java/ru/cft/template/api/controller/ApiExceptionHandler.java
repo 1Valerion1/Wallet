@@ -42,6 +42,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(UserIdNotMatch.class)
     public ResponseEntity<Object> handle(UserIdNotMatch exception) {
-        return new ResponseEntity<>("Номер телефона и пользователь в сесси не совпадают: " + exception.getLocalizedMessage(), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>("Номер телефона и пользователь в сесси не совпадают: " + exception.getLocalizedMessage(),
+                HttpStatus.FORBIDDEN);
     }
 }

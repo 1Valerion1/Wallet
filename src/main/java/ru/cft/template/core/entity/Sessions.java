@@ -29,6 +29,7 @@ public class Sessions {
     @Id
     @UuidGenerator
     private String value;
+
     @Column(name = "expiration_time")
     private LocalDateTime expirationTime;
     private boolean active;

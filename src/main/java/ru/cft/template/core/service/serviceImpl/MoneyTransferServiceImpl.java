@@ -12,6 +12,7 @@ import ru.cft.template.core.entity.Enum.TransferType;
 import ru.cft.template.core.entity.MoneyTransfer;
 import ru.cft.template.core.entity.User;
 import ru.cft.template.core.entity.Wallet;
+import ru.cft.template.core.exception.InsufficientFundsException;
 import ru.cft.template.core.exception.NotFoundException;
 import ru.cft.template.core.exception.ServiceException;
 import ru.cft.template.core.mapper.MoneyTransferMapper;
@@ -51,16 +52,43 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
         if (!walletRepository.existsByWalletId(Long.parseLong(moneyTransferCreateRequest.receiverWallet()))) {
             throw new NotFoundException("Wallet with id does not exist");
         }
-        moneyTransferRepository.save(moneyTransfer);
+        if (moneyTransferCreateRequest.amount() <= 0) {
+            throw new InsufficientFundsException();
+        }
 
+        // Проверка баланса отправителя
+        User sender = userSession();
+        Wallet senderWallet = walletRepository.findByUserId(sender.getId());
+        if (senderWallet.getBalance() < moneyTransferCreateRequest.amount()) {
+            throw new InsufficientFundsException();
+        }
+        // Обновление баланса кошельков у получателя
+        updateReceiverWallet(moneyTransferCreateRequest.receiverWallet(), moneyTransferCreateRequest.amount());
+        // Обновление баланса кошельков у отправителя
+        updateSenderWallet(sender, moneyTransferCreateRequest.amount());
+
+        senderWallet.setBalance(senderWallet.getBalance() - moneyTransferCreateRequest.amount());
+        walletRepository.update(senderWallet.getBalance(), sender.getId());
+
+        // Сохранение данных о переводе
+        moneyTransferRepository.save(moneyTransfer);
 
         return moneyTransferMapper.map(
                 moneyTransfer,
                 moneyTransferCreateRequest.receiverPhone(),
                 Long.parseLong(moneyTransferCreateRequest.receiverWallet()));
     }
+    private void updateReceiverWallet(String receiverWalletId, Integer transferAmount) {
+        Wallet receiverWallet = walletRepository.findByUserId(Long.parseLong(receiverWalletId));
+        receiverWallet.setBalance(receiverWallet.getBalance() + transferAmount);
+        walletRepository.update(receiverWallet.getBalance(), Long.parseLong(receiverWalletId));
+    }
 
-
+    private void updateSenderWallet(User sender, Integer transferAmount) {
+        Wallet senderWallet = walletRepository.findByUserId(sender.getId());
+        senderWallet.setBalance(senderWallet.getBalance() - transferAmount);
+        walletRepository.update(senderWallet.getBalance(), sender.getId());
+    }
     @Override
     public MoneyTransfer buildNewMoneyTransfer(MoneyTransferCreateRequest dto) {
 
@@ -103,7 +131,7 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
                     .and(MoneyTransferSpecifications.withTransferType(filters.transferType()));
         }
 
-        if(filters.receiverWallet() == null && filters.receiverPhone() == null) {
+        if (filters.receiverWallet() == null && filters.receiverPhone() == null) {
             specification = specification.or(MoneyTransferSpecifications.withUserId(userId));
         }
 

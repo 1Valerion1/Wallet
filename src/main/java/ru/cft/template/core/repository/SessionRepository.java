@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface SessionRepository extends JpaRepository<Sessions, String> {
+
     Sessions findByValue(String value);
 
     List<Sessions> findAllByUserAndActiveTrueAndExpirationTimeAfter(User user, LocalDateTime expirationTime);

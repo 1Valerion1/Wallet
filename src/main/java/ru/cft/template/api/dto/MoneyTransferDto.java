@@ -6,8 +6,9 @@ import jakarta.persistence.Enumerated;
 import lombok.Builder;
 import ru.cft.template.core.entity.Enum.TransferType;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
+
 @Builder
 @Schema(description = "Information about MoneyTransferDto")
 public record MoneyTransferDto(
@@ -20,5 +21,5 @@ public record MoneyTransferDto(
         String receiverPhone,
         Long receiverWallet,
         String comment,
-        Instant creating_translation ) {
+        LocalDateTime creatingTranslation) {
 }

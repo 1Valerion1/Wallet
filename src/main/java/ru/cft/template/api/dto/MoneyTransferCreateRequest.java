@@ -1,22 +1,27 @@
 package ru.cft.template.api.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
-import ru.cft.template.core.entity.Enum.TransferType;
 
 @Builder
 @Schema(description = "Information about MoneyTransferCreateRequest")
 public record MoneyTransferCreateRequest(
+        @NotNull
         @Schema(example = "4555")
         Integer amount,
-        @Enumerated(EnumType.STRING)
-        TransferType transferType,
+
+        @NotNull
+        @Pattern(regexp = "^7(\\d{10})$")
         @Schema(example = "79435352422")
         String receiverPhone,
+
+        @NotNull
         @Schema(example = "12")
         String receiverWallet,
-        @Schema(example = "Что-то я устал")
+        @NotNull
+        @Pattern(regexp = "^.{0,49}")
+        @Schema(example = "Тут я очень рад покупке")
         String comment) {
 }

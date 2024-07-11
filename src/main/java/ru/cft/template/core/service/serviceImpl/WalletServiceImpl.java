@@ -19,38 +19,44 @@ public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
     private final WalletMapper walletMapper;
-
+    private SecureRandom secureRandom = new SecureRandom();
 
     @Override
     public HesoyamDto getRoulette() {
-        SecureRandom secureRandom = new SecureRandom();
         int chance = secureRandom.nextInt(100);
-
         if (chance < 25) {
-            return updateBalance(10, true);
+            return updateBalanceIfWin(10, true);
         } else {
-            return updateBalance(0, false);
+            return updateBalanceIfWin(0, false);
         }
     }
 
-    public HesoyamDto updateBalance(Integer amount, Boolean trueFalse) {
-        Long userId = Context.get().getSession().getUser().getId();
-        Wallet wallet = walletRepository.findByUserId(userId);
-        // throw new UsernameNotFoundException(String.format("Wallet with userId %s not found", userId));
-        if (trueFalse) {
+    private HesoyamDto updateBalanceIfWin(Integer amount, Boolean success) {
+        Wallet wallet = getWalletByUserId();
+
+        if (success) {
             wallet.setBalance(wallet.getBalance() + amount);
             walletRepository.update(wallet.getBalance(), wallet.getWalletId());
 
-            return new HesoyamDto(true, wallet.getBalance());
+            return resultRoulette(true, wallet.getBalance());
         }
-        return new HesoyamDto(false, wallet.getBalance());
+        return resultRoulette(false, wallet.getBalance());
+    }
+
+    private HesoyamDto resultRoulette(Boolean success, Integer balance) {
+
+        return new HesoyamDto(success, balance);
     }
 
     @Override
     public WalletDto getById() {
-        Long userId = Context.get().getSession().getUser().getId();
-        Wallet wallet = walletRepository.findByUserId(userId);
+        Wallet wallet = getWalletByUserId();
 
         return walletMapper.map(wallet);
+    }
+
+    private Wallet getWalletByUserId() {
+        Long userId = Context.get().getUser().getId();
+        return walletRepository.findByUserId(userId);
     }
 }

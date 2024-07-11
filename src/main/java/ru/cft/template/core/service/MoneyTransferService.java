@@ -15,8 +15,6 @@ public interface MoneyTransferService {
 
     MoneyTransfer buildNewMoneyTransfer(MoneyTransferCreateRequest dto);
 
-    List<MoneyTransferDto> getByAllIdOrThrow();
-
     List<MoneyTransferDto> getByAllIdOrThrow(MoneyTransferFilteredTransfers moneyTransferFilteredTransfers);
 
     MoneyTransferDto getById(UUID transferId);

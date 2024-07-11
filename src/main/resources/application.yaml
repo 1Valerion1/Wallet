@@ -9,7 +9,7 @@ spring:
     # использовать его, то требуется поменить его на нужный
     url: jdbc:postgresql://localhost:5430/wallet
     #Имя пользователя БД
-    username: wallet # поменять на wallet
+    username: wallet
     password: wallet
 
   flyway:

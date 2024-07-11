@@ -8,21 +8,20 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.cft.template.core.entity.Enum.Status;
 import ru.cft.template.core.entity.PaymentInvoice;
-import ru.cft.template.core.entity.User;
 
 import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface PaymentInvoiceRepository extends JpaRepository<PaymentInvoice, String> {
-    List<PaymentInvoice> findBySenderId(User id);
+    List<PaymentInvoice> findBySenderId(Long id);
 
     PaymentInvoice findByAccountNumber(UUID id);
 
     List<PaymentInvoice> findByReceiverIdAndStatus(Long id, Status unpaid);
 
     @Modifying
-    @Query("UPDATE PaymentInvoice pi SET pi.status = :status WHERE pi.accountNumber = :accountNumber")
+    @Query("update PaymentInvoice pi set pi.status = :status where pi.accountNumber = :accountNumber")
     @Transactional
     void updateStatusAndAccountNumber(@Param("accountNumber") UUID accountNumber, @Param("status") Status status);
 }

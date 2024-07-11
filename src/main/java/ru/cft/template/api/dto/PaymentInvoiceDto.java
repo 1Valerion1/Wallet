@@ -3,7 +3,7 @@ package ru.cft.template.api.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import org.hibernate.annotations.CreationTimestamp;
 import ru.cft.template.core.entity.Enum.Status;
@@ -16,12 +16,14 @@ import java.util.UUID;
 public record PaymentInvoiceDto(
 
         UUID accountNumber,
+
         Integer amount,
         Long senderId,
         Long receiverId,
         @Enumerated(EnumType.STRING)
         Status status,
-        @Size(max = 250)
+
+        @Pattern(regexp = "^.{0,49}")
         String comment,
         @CreationTimestamp
         LocalDateTime completedAt

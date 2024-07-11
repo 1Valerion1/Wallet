@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.cft.template.core.validation.ValidPhone;
 
 import java.time.LocalDate;
 
@@ -25,7 +24,7 @@ public record UserCreateRequest(
         @Schema(example = "Иванов")
         String patronymic,
         @NotNull
-        @ValidPhone
+        @Pattern(regexp = "^7(\\d{10})$")
         @Schema(example = "79435352422")
         String phone,
         @Email

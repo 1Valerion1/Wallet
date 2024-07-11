@@ -3,7 +3,7 @@ package ru.cft.template.api.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Builder
 @Schema(description = "Information about UserDto")
@@ -14,6 +14,6 @@ public record UserDto(
         String email,
         int age,
         String phone,
-        Instant registrationDate,
-        Instant lastUpdateDate) {
+        LocalDateTime registrationDate,
+        LocalDateTime lastUpdateDate) {
 }

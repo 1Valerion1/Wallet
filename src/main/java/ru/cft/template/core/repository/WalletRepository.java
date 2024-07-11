@@ -12,9 +12,11 @@ import ru.cft.template.core.entity.Wallet;
 public interface WalletRepository extends JpaRepository<Wallet, String> {
     Wallet findByUserId(Long userid);
 
+    boolean existsByWalletId(Long walletId);
+
     @Transactional
     @Modifying
-    @Query("UPDATE Wallet w SET w.balance = :balance WHERE w.walletId = :walletId")
+    @Query("update Wallet w set w.balance = :balance where w.walletId = :walletId")
     void update(@Param("balance") Integer balance, @Param("walletId") Long walletId);
 
 

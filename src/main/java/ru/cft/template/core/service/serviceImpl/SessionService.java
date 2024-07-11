@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.cft.template.api.dto.SessionDto;
 import ru.cft.template.api.dto.SessionRequest;
 import ru.cft.template.core.Context;
-import ru.cft.template.core.entity.Session;
+import ru.cft.template.core.entity.Sessions;
 import ru.cft.template.core.entity.User;
 import ru.cft.template.core.mapper.SessionMapper;
 import ru.cft.template.core.repository.SessionRepository;
@@ -25,25 +25,25 @@ public class SessionService {
     private final AuthenticationManager authenticationManager;
 
     @Nullable
-    public Session getValidSession(String token) {
-        Session session = sessionRepository.findByValue(token);
-        if (session != null && session.getExpirationTime().isBefore(LocalDateTime.now())) {
-            invalidate(session);
+    public Sessions getValidSession(String token) {
+        Sessions sessions = sessionRepository.findByValue(token);
+        if (sessions != null && sessions.getExpirationTime().isBefore(LocalDateTime.now())) {
+            invalidate(sessions);
             return null;
         }
-        return session;
+        return sessions;
     }
 
     public List<SessionDto> getAllActive() {
         User user = Context.get().getUser();
-        List<Session> sessions = sessionRepository
+        List<Sessions> sessions = sessionRepository
                 .findAllByUserAndActiveTrueAndExpirationTimeAfter(user, LocalDateTime.now());
 
         return sessionMapper.map(sessions);
     }
 
     public SessionDto getCurrent() {
-        return sessionMapper.map(Context.get().getSession());
+        return sessionMapper.map(Context.get().getSessions());
     }
 
     public SessionDto create(SessionRequest sessionRequest) {
@@ -51,19 +51,19 @@ public class SessionService {
                 UsernamePasswordAuthenticationToken.unauthenticated(sessionRequest.email(), sessionRequest.password()));
 
         User user = (User) authentication.getPrincipal();
-        List<Session> activeSessions = sessionRepository.findAllByUserAndActiveTrue(user);
+        List<Sessions> activeSessions = sessionRepository.findAllByUserAndActiveTrue(user);
         if (activeSessions.size() >= 3) {
             throw new RuntimeException("Достигнут предел количества активных сессий для данного пользователя");
         }
 
-        Session session = buildNewSession((User) authentication.getPrincipal());
-        sessionRepository.save(session);
-        return sessionMapper.map(session);
+        Sessions sessions = buildNewSession((User) authentication.getPrincipal());
+        sessionRepository.save(sessions);
+        return sessionMapper.map(sessions);
     }
 
     public void removeCurrent() {
-        Session session = Context.get().getSession();
-        invalidate(session);
+        Sessions sessions = Context.get().getSessions();
+        invalidate(sessions);
     }
 
     public void invalidateExpiredSessions() {
@@ -74,12 +74,12 @@ public class SessionService {
         sessionRepository.deleteAllByExpirationTimeAfter();
     }
 
-    private void invalidate(Session session) {
-        session.setActive(false);
+    private void invalidate(Sessions sessions) {
+        sessions.setActive(false);
     }
 
-    private Session buildNewSession(User user) {
-        return Session.builder()
+    private Sessions buildNewSession(User user) {
+        return Sessions.builder()
                 .active(true)
                 .expirationTime(LocalDateTime.now().plusHours(1))
                 .user(user)

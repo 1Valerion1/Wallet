@@ -21,11 +21,11 @@ import java.util.Objects;
 
 @Data
 @Entity
-@Table(name = "session", schema = "wallet")
+@Table(name = "sessions", schema = "wallet")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Session {
+public class Sessions {
     @Id
     @UuidGenerator
     private String value;
@@ -45,8 +45,8 @@ public class Session {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Session session = (Session) o;
-        return getValue() != null && Objects.equals(getValue(), session.getValue());
+        Sessions sessions = (Sessions) o;
+        return getValue() != null && Objects.equals(getValue(), sessions.getValue());
     }
 
     @Override

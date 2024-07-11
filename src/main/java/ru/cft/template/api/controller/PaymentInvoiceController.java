@@ -7,13 +7,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cft.template.api.dto.PaymentInvoiceCreateRequest;
 import ru.cft.template.api.dto.PaymentInvoiceDto;
+import ru.cft.template.core.entity.Enum.Status;
 import ru.cft.template.core.service.PaymentInvoiceService;
 
 import java.util.List;
@@ -34,15 +35,9 @@ public class PaymentInvoiceController {
     }
 
     @GetMapping("/paymentInvoice")
-    @Operation(description = "Получение списка всех выставленных счетов")
-    public List<PaymentInvoiceDto> getInfoPaymentAll() {
-        return paymentInvoiceService.getInfoPaymentAll();
-    }
-
-    @GetMapping("/paymentInvoice/unpaid")
-    @Operation(description = "Возвращает список всех выставленных счетов к оплате.")
-    public List<PaymentInvoiceDto> getInfoPayment() {
-        return paymentInvoiceService.getInfoPaymentUnpaid();
+    @Operation(description = "Получение списка всех выставленных счетов и счетов к оплате")
+    public List<PaymentInvoiceDto> getInfoPaymentAll(@RequestParam(required = false) Status status) {
+        return paymentInvoiceService.getInfoPaymentAll(status);
     }
 
     @GetMapping("/paymentInvoice/{paymentId}")
@@ -51,13 +46,14 @@ public class PaymentInvoiceController {
         return paymentInvoiceService.getInfoPaymentId(paymentId);
     }
 
-    @PatchMapping("/pay/{phoneNumber}")
+    @PostMapping("/pay/{phoneNumber}")
     @Operation(description = "Оплачивает существующий счет на оплату.")
-    public PaymentInvoiceDto paid(@Valid @PathVariable String phoneNumber) {
-        return paymentInvoiceService.paid(phoneNumber);
+    public List<PaymentInvoiceDto> paid(@Valid @PathVariable String phoneNumber,
+                                  @RequestParam(required = false) UUID accountNumber) {
+        return paymentInvoiceService.paid(phoneNumber,accountNumber);
     }
 
-    @PatchMapping("/cancell/{invoiceId}")
+    @PostMapping("/cancell/{invoiceId}")
     @Operation(description = "Отменяет существующий счет на оплату.")
     public PaymentInvoiceDto cancell(@PathVariable UUID invoiceId) {
         return paymentInvoiceService.cancell(invoiceId);

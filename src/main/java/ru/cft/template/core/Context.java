@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.cft.template.core.entity.Session;
+import ru.cft.template.core.entity.Sessions;
 import ru.cft.template.core.entity.User;
 
 /**
@@ -20,7 +20,7 @@ public final class Context {
     /**
      * Текущая сессия пользователя, если имеется
      */
-    private Session session;
+    private Sessions sessions;
     /**
      * Текущий авторизованный пользователь, если имеется
      */

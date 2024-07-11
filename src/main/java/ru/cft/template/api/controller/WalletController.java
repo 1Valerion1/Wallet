@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.cft.template.api.dto.HesoyamDto;
 import ru.cft.template.api.dto.WalletDto;
@@ -26,7 +25,7 @@ public class WalletController {
         return walletService.getById();
     }
 
-    @PatchMapping("/wallet/roulette")
+    @GetMapping("/wallet/roulette")
     @Operation(description = "Рулетка с 25% шансом пользователь получает на счёт 10 д.е.")
     public HesoyamDto getRoulette() {
         return walletService.getRoulette();

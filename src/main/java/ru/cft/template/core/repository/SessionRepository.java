@@ -4,27 +4,27 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.cft.template.core.entity.Session;
+import ru.cft.template.core.entity.Sessions;
 import ru.cft.template.core.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface SessionRepository extends JpaRepository<Session, String> {
-    Session findByValue(String value);
+public interface SessionRepository extends JpaRepository<Sessions, String> {
+    Sessions findByValue(String value);
 
-    List<Session> findAllByUserAndActiveTrueAndExpirationTimeAfter(User user, LocalDateTime expirationTime);
+    List<Sessions> findAllByUserAndActiveTrueAndExpirationTimeAfter(User user, LocalDateTime expirationTime);
 
     @Modifying
-    @Query(value = "update wallet.session set active = false where expiration_time < :localDateTime",
+    @Query(value = "update sessions set active = false where expiration_time < :localDateTime",
             nativeQuery = true)
     void updateAllByExpirationTimeAfter(LocalDateTime localDateTime);
 
-    List<Session> findAllByUserAndActiveTrue(User user);
+    List<Sessions> findAllByUserAndActiveTrue(User user);
 
     @Modifying
-    @Query(value = "DELETE FROM wallet.session WHERE active = false",
+    @Query(value = "delete from sessions where active = false",
             nativeQuery = true)
     void deleteAllByExpirationTimeAfter();
 

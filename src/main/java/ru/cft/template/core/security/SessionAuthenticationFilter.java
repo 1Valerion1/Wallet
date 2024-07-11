@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.cft.template.core.Context;
-import ru.cft.template.core.entity.Session;
+import ru.cft.template.core.entity.Sessions;
 import ru.cft.template.core.entity.User;
 import ru.cft.template.core.service.serviceImpl.SessionService;
 
@@ -34,9 +34,9 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         String sessionToken = getTokenFromRequest(request);
         if (sessionToken != null) {
-            Session session = sessionService.getValidSession(sessionToken);
-            if (session != null && session.getUser() != null) {
-                User user = session.getUser();
+            Sessions sessions = sessionService.getValidSession(sessionToken);
+            if (sessions != null) {
+                User user = sessions.getUser();
                 UsernamePasswordAuthenticationToken authenticationToken =
                         UsernamePasswordAuthenticationToken.authenticated(
                                 user,
@@ -45,7 +45,7 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
                         );
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                Context.get().setSession(session);
+                Context.get().setSessions(sessions);
                 Context.get().setUser(user);
             }
         }

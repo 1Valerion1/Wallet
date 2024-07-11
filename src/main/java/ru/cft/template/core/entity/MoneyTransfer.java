@@ -19,13 +19,13 @@ import org.hibernate.annotations.UuidGenerator;
 import ru.cft.template.core.entity.Enum.Status;
 import ru.cft.template.core.entity.Enum.TransferType;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @Builder
 @Entity
-@Table(name = "money_transfer" , schema = "wallet")
+@Table(name = "money_transfer", schema = "wallet")
 @NoArgsConstructor
 @AllArgsConstructor
 public class MoneyTransfer {
@@ -35,25 +35,29 @@ public class MoneyTransfer {
     private UUID transferId;
 
     private Integer amount;
+
     @Column
     @Enumerated(EnumType.STRING)
     private TransferType transferType;
 
-    @Column(name="status")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    private String receiverPhone;
-    private String receiverWallet;
-
-    private String comment;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User user;
 
-    @Column(name="creating_translation")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "wallet_id")
+    @ToString.Exclude
+    private Wallet wallet;
+
+    private String comment;
+
+
+    @Column(name = "creating_translation")
     @CreationTimestamp
-    private Instant creatingTranslation;
+    private LocalDateTime creatingTranslation;
 }

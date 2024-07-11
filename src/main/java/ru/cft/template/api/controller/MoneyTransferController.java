@@ -25,7 +25,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "MoneyTransfer", description = "Операции над денежный перевож: регистрация,обновление и получения данных о пользователе")
+@Tag(name = "MoneyTransfer", description = "Операции над денежным переводом: регистрация,обновление и получения данных о пользователе")
 public class MoneyTransferController {
 
     private final MoneyTransferService moneyTransferService;
@@ -41,17 +41,13 @@ public class MoneyTransferController {
     @Operation(description = "Возвращает историю всех денежных переводов с возможностью фильтрации")
     public List<MoneyTransferDto> getHistory(@RequestParam(required = false) TransferType transferType,
                                              @RequestParam(required = false) Status status,
-                                             @RequestParam(required = false) String receiverPhone,
+                                             @Valid @RequestParam(required = false) String receiverPhone,
                                              @RequestParam(required = false) String receiverWallet) {
+
         MoneyTransferFilteredTransfers filter = new MoneyTransferFilteredTransfers(transferType, status,
                 receiverPhone, receiverWallet);
-        if (filter.transferType() == null && filter.status() == null &&
-                filter.receiverPhone() == null && filter.receiverWallet() == null) {
-            return moneyTransferService.getByAllIdOrThrow();
 
-        } else {
-            return moneyTransferService.getByAllIdOrThrow(filter);
-        }
+        return moneyTransferService.getByAllIdOrThrow(filter);
     }
 
 

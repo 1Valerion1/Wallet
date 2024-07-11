@@ -6,12 +6,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.cft.template.core.exception.InsufficientFundsException;
-import ru.cft.template.core.exception.InvoiceNotFoundException;
+import ru.cft.template.core.exception.NotFoundException;
 import ru.cft.template.core.exception.ServiceException;
-import ru.cft.template.core.exception.UserEmailException;
+import ru.cft.template.core.exception.ConflictException;
 import ru.cft.template.core.exception.UserIdNotMatch;
-import ru.cft.template.core.exception.UserNotFoundException;
-import ru.cft.template.core.exception.UserPhoneException;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -26,29 +24,20 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exception.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(UserEmailException.class)
-    public ResponseEntity<Object> handle(UserEmailException exception) {
-        return new ResponseEntity<>("Почта не найдена: " + exception.getLocalizedMessage(), HttpStatus.CONFLICT);
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Object> handle(ConflictException exception) {
+        return new ResponseEntity<>("Данный ресурс уже существует: " + exception.getLocalizedMessage(), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(UserPhoneException.class)
-    public ResponseEntity<Object> handle(UserPhoneException exception) {
-        return new ResponseEntity<>("Номер телефона не найден: " + exception.getLocalizedMessage(), HttpStatus.NOT_FOUND);
-    }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> handle(UserNotFoundException exception) {
-        return new ResponseEntity<>("Пользователь не найден: " + exception.getLocalizedMessage(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(InvoiceNotFoundException.class)
-    public ResponseEntity<Object> handle(InvoiceNotFoundException exception) {
-        return new ResponseEntity<>("Счет на оплату не найден: " + exception.getLocalizedMessage(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Object> handle(NotFoundException exception) {
+        return new ResponseEntity<>("Не найдено: " + exception.getLocalizedMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InsufficientFundsException.class)
     public ResponseEntity<Object> handle(InsufficientFundsException exception) {
-        return new ResponseEntity<>("Не хватает средств: " + exception.getLocalizedMessage(), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>("Не хватает средств: " + exception.getLocalizedMessage(), HttpStatus.PAYMENT_REQUIRED);
     }
 
     @ExceptionHandler(UserIdNotMatch.class)

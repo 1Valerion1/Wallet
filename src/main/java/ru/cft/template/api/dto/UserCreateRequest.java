@@ -1,5 +1,6 @@
 package ru.cft.template.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +11,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 
 @Builder
-public record UserCreateRequest(
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+public record UserCreateRequest (
         @NotNull
         @Pattern(regexp = "^[А-Я][а-я]{0,49}$")
         @Schema(description = "Фамилия пользователя", example = "Иванов")

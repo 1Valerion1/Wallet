@@ -33,7 +33,6 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
     private static final String MONEY_TRANSFER_NOT_FOUND = null;
     private final MoneyTransferRepository moneyTransferRepository;
     private final WalletRepository walletRepository;
-
     private final MoneyTransferMapper moneyTransferMapper;
 
     private User userSession() {
@@ -54,7 +53,6 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
         if (moneyTransferCreateRequest.amount() <= 0) {
             throw new InsufficientFundsException();
         }
-
         // Проверка баланса отправителя
         User sender = userSession();
         Wallet senderWallet = walletRepository.findByUserId(sender.getId());
@@ -65,11 +63,8 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
         updateReceiverWallet(moneyTransferCreateRequest.receiverWallet(), moneyTransferCreateRequest.amount());
         // Обновление баланса кошельков у отправителя
         updateSenderWallet(sender, moneyTransferCreateRequest.amount());
-
         senderWallet.setBalance(senderWallet.getBalance() - moneyTransferCreateRequest.amount());
         walletRepository.update(senderWallet.getBalance(), sender.getId());
-
-
         // Сохранение данных о переводе
         moneyTransferRepository.save(moneyTransfer);
 
@@ -91,7 +86,6 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
     }
     @Override
     public MoneyTransfer buildNewMoneyTransfer(MoneyTransferCreateRequest dto) {
-
 
         return MoneyTransfer
                 .builder()

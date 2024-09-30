@@ -19,7 +19,7 @@ public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
     private final WalletMapper walletMapper;
-    private SecureRandom secureRandom = new SecureRandom();
+    private final SecureRandom secureRandom;
 
     @Override
     public HesoyamDto getRoulette() {

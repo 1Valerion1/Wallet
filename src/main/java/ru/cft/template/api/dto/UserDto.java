@@ -11,6 +11,7 @@ public record UserDto(
         Long id,
         String firstName,
         String lastName,
+        String patronymic,
         String email,
         int age,
         String phone,

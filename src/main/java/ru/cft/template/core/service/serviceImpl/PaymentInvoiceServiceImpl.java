@@ -31,16 +31,19 @@ public class PaymentInvoiceServiceImpl implements PaymentInvoiceService {
     private final UserRepository userRepository;
     private final WalletRepository walletRepository;
     private final PaymentInvoiceMapper paymentInvoiceMapper;
-    private Wallet userWallet(Long id){
-        return  walletRepository.findByUserId(id);
+
+    private Wallet userWallet(Long id) {
+        return walletRepository.findByUserId(id);
     }
+
     private User getSenderId() {
-        return Context.get().getSessions().getUser();
+        return Context.get().getUser();
     }
+
     @Override
     public PaymentInvoiceDto create(PaymentInvoiceCreateRequest createRequest) {
         PaymentInvoice paymentInvoice = buildNewPayment(createRequest);
-        paymentInvoice.setSenderId(getSenderId().getId());
+       // paymentInvoice.setSenderId(getSenderId().getId());
         paymentInvoiceRepository.save(paymentInvoice);
 
         return paymentInvoiceMapper.map(paymentInvoice);
@@ -60,7 +63,7 @@ public class PaymentInvoiceServiceImpl implements PaymentInvoiceService {
     @Override
     public PaymentInvoiceDto cancell(UUID invoiceId) {
         PaymentInvoice paymentInvoice = paymentInvoiceRepository.findByAccountNumber(invoiceId);
-        if (!paymentInvoice.getSenderId().equals(Context.get().getSessions().getUser().getId())) {
+        if (!paymentInvoice.getSenderId().equals(Context.get().getUser().getId())) {
             throw new UserIdNotMatch();
 
         }
@@ -97,7 +100,7 @@ public class PaymentInvoiceServiceImpl implements PaymentInvoiceService {
         if (userOptional.isEmpty()) {
             throw new NotFoundException("User no found!");
         }
-        if (!userOptional.get().getId().equals(Context.get().getSessions().getUser().getId())) {
+        if (!userOptional.get().getId().equals(Context.get().getUser().getId())) {
             throw new UserIdNotMatch();
         }
         return userOptional.get();
@@ -131,7 +134,7 @@ public class PaymentInvoiceServiceImpl implements PaymentInvoiceService {
         walletRepository.update(walletSenderMoney.getBalance(), walletSenderMoney.getWalletId());
     }
 
-     private List<PaymentInvoiceDto> createPaidInvoice(PaymentInvoiceDto unpaidInvoice) {
+    private List<PaymentInvoiceDto> createPaidInvoice(PaymentInvoiceDto unpaidInvoice) {
         List<PaymentInvoiceDto> paidInvoiceList = new ArrayList<>();
         PaymentInvoiceDto paidInvoice = new PaymentInvoiceDto(
                 unpaidInvoice.accountNumber(),
@@ -155,7 +158,7 @@ public class PaymentInvoiceServiceImpl implements PaymentInvoiceService {
 
     @Override
     public List<PaymentInvoiceDto> getInfoPaymentAll(Status status) {
-        User invoiceIssued = Context.get().getSessions().getUser();
+        User invoiceIssued = Context.get().getUser();
         List<PaymentInvoice> paymentInvoiceList;
 
         if (status != null) {

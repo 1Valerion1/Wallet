@@ -4,18 +4,12 @@ server:
 spring:
 
   datasource:
-    # По умолчанию postgresql имеет 5432 порт. Но так как подразумевается запуск через docker-compose, указан порт
-    # из docker-compose.yaml для корректной проброски. Если у вас локально установлен postgresql и вы собираетесь
-    # использовать его, то требуется поменить его на нужный
     url: jdbc:postgresql://localhost:5430/wallet
-    #Имя пользователя БД
     username: wallet
     password: wallet
 
   flyway:
-    #Вкл/выкл flyway
     enabled: true
-    #Расположение файлов миграции
     locations:
       - db.migration
     default-schema: wallet
@@ -26,8 +20,8 @@ spring:
         default_schema: wallet
         format_sql: true
     show-sql: true
+
     hibernate:
-      #Генерация схемы БД на основе Entity
       ddl-auto: none
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 

@@ -1,7 +1,6 @@
 package ru.cft.template.core.service.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.cft.template.api.dto.UserCreateRequest;
@@ -26,6 +25,7 @@ public class UserService {
     private final WalletRepository walletRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final Context context;
 
 
     public UserDto getById(String id) {
@@ -36,20 +36,18 @@ public class UserService {
         User user = buildNewUser(userCreateRequest);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        if (userRepository.existsByEmail(user.getEmail()) &&
+        if (userRepository.existsByEmail(user.getEmail()) ||
                 userRepository.existsByPhone(user.getPhone())) {
             throw new ConflictException("User with this email or phone already exists");
         }
+
         Wallet wallet = new Wallet();
         wallet.setBalance(100);
         wallet.setUser(user);
 
-
         try {
             userRepository.save(user);
             walletRepository.save(wallet);
-        } catch (ConstraintViolationException ex) {
-            throw new ConflictException("User with this email or phone already exists" + ex);
         } catch (RuntimeException ex) {
             throw ex;
         }
@@ -71,7 +69,7 @@ public class UserService {
     }
 
     public UserDto update(UserPatchRequest userPatchRequest) {
-        User user = Context.get().getUser();
+        User user = context.getUser();
         userMapper.map(user, userPatchRequest);
         userRepository.save(user);
         return userMapper.map(user);
